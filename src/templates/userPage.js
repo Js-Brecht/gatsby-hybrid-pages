@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { graphql } from 'gatsby';
+import { Router } from '@reach/router';
+import Layout from "../components/layout"
+import Index from '../pages/index';
 
-export const UserPage = ({ userId, data }) => {
+const UserPage = ({ userId, data }) => {
     const [userData, setUserData] = useState(data);
     const [shouldRender] = useState(() => {
         let newStaticVal = parseInt(userId, 10) === userData.userId;
@@ -26,28 +30,53 @@ export const UserPage = ({ userId, data }) => {
         }
     }, [shouldRender]);
 
-    return (!shouldRender()
-        ? (
-            <div>
-                This is a loading effect!!!
-            </div>
-        ) : (
-            <table>
-                <thead>
-                    <tr>
-                        {Object.keys(userData).map((key, idx) => (
-                            <th key={idx}>{key}</th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        {Object.values(userData).map((val, idx) => (
-                            <td key={idx}>{val}</td>
-                        ))}
-                    </tr>
-                </tbody>
-            </table>
-        )
+    return (
+        <Layout>
+            {!shouldRender()
+                ? (
+                    <div>
+                        This is a loading effect!!!
+                    </div>
+                ) : (
+                    <table>
+                        <thead>
+                            <tr>
+                                {Object.keys(userData).map((key, idx) => (
+                                    <th key={idx}>{key}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {Object.values(userData).map((val, idx) => (
+                                    <td key={idx}>{val}</td>
+                                ))}
+                            </tr>
+                        </tbody>
+                    </table>
+                )
+            }
+        </Layout>
     )
 }
+
+const User = ({ data }) => {
+    return (
+        <Router>
+            <UserPage path='/user/:userId' data={data.user} />
+            <Index path="/user/" />
+        </Router>
+    )
+}
+
+export default User;
+
+export const query = graphql`
+    query($id: String) {
+        user(id: { eq: $id }) {
+            id
+            userId
+            name
+        }
+    }
+`;

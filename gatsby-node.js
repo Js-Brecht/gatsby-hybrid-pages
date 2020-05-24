@@ -54,19 +54,16 @@ exports.createPages = async ({ actions, graphql }) => {
     results.data.allUser.edges.forEach(({ node }) => {
         createPage({
             path: `/user/${node.userId}`,
-            component: require.resolve('./src/pages/user'),
+            component: require.resolve('./src/templates/userPage'),
             context: {
                 id: node.id,
             }
         })
     });
-}
-
-exports.onCreatePage = ({ actions, page }) => {
-    const { createPage } = actions;
-
-    if (page.path === '/user/') {
-        page.matchPath = '/user/*';
-        createPage(page);
-    }
+    createPage({
+        path: '/user/',
+        matchPath: '/user/*',
+        component: require.resolve('./src/templates/userPage'),
+        context: {}
+    })
 }
